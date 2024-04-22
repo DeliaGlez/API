@@ -25,24 +25,54 @@ router.post('/', function(req, res, next) {
   res.json(user);
 
 });
+
 router.get('/:id', function(req, res, next) {
   const userId = parseInt(req.params.id); 
 
-  const userIndex = users.indIndex(user => user.id === userId);
+  const userIndex = users.findIndex(user => user.id === userId);
 
   if (userIndex === -1) {
-    return res.status(404).json({ error: 'User not found' });
+    return res.status(400).json({ error: 'User not found' });
   }
 
   const user = users[userIndex];
   res.json(user);
 });
-router.put('/', function(req, res, next) {
-  
+
+router.put('/:id', function(req, res, next) {
+  const userId = parseInt(req.params.id); 
+  const userData = req.body;
+
+  const userIndex = users.findIndex(user => user.id === userId);
+
+  if (userIndex === -1) {
+    return res.status(400).json({ error: 'User not found' });
+  }
+
+  const updatedUser = {
+    id: userId,
+    name: userData.name || users[userIndex].name,
+    email: userData.email || users[userIndex].email,
+    
+  };
+
+  users[userIndex] = updatedUser;
+
+  res.json(updatedUser);
 });
 
-router.delete('/', function(req, res, next) {
-  
+router.delete('/:id', function(req, res, next) {
+  const userId = parseInt(req.params.id); 
+
+  const userIndex = users.findIndex(user => user.id === userId);
+
+  if (userIndex === -1) {
+    return res.status(400).json({ error: 'User not found.' });
+  }
+
+  const deletedUser = users.splice(userIndex, 1);
+
+  res.json({message: 'User deleted.'});
 });
 
 module.exports = router;
